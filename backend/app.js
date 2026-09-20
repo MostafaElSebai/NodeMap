@@ -13,7 +13,7 @@ import morgan from "morgan";
 
 const app = express();
 
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors({ credentials: true, origin: "https://backend-three-delta-emln8jvhph.vercel.app" }));
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.json());
 app.use(morgan("dev"));
@@ -39,7 +39,7 @@ const port = process.env.PORT || 3000;
 const start = async () => {
     try {
         await connectDB(process.env.MONGO_URI)
-        
+
         if (process.env.NODE_ENV !== 'production') {
             const server = app.listen(port, () => {
                 console.log(`Server is listening on port: ${port}...`);
