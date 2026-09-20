@@ -1,0 +1,81 @@
+*nodes*
+
+id: id
+type: id reference to type - (dropdown - user can add more to types)
+title: str
+description: str
+boardId: id reference to the board
+
+*nodeTypes* 
+
+id: id
+boardId: id reference to the board its in
+name: str
+
+*connections* - if non-directional create two with interchanged parent and child node
+
+id: id
+parentNodeId: reference to first node id
+childNodeId: reference to second node id
+groupId: generate id to specify for non directional connections
+connectionType: direction || non-directional
+connectionName: str
+
+*boards*
+
+id: id
+name: str
+userId: id referencing the user who created it
+
+
+*users*
+
+id: id
+name: str
+email: str
+password: str
+
+
+-----------------------------------------------------------
+
+search (till now)
+
+you can search in two ways:
+- to get all nodes or connections with certain types 
+
+   filter by
+     node type : showing only nodes with the type
+     connection type : showing the connection and it's two nodes
+     
+     
+
+- to get a path between two nodes
+
+  filter by 
+    first node:
+      - type
+      - title
+    second node:
+      - type
+      - title
+
+_______________________________________________________________________
+
+*Front-end*
+
+- home page 
+header
+content about the app
+footer
+
+-boards
+cards containting the boards of the user
+search with board titles
+
+-board canvas
+canvas containing the nodes and connections
+search widget
+
+- login
+register, login and login as guest
+

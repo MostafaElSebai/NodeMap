@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-app: #0F1115;
+  --color-bg-surface: #1A1D24;
+  --color-border-subtle: #2C313A;
+  --color-text-primary: #E2E8F0;
+  --color-text-secondary: #8B949E;
+  --color-accent-teal: #4A8B9A;
+  
+  --font-sans: "Inter", "Geist", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Space Mono", ui-monospace, monospace;
+}
+
+body {
+  @apply bg-bg-app text-text-primary font-sans antialiased;
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  @apply flex flex-col min-h-screen box-border;
+}
+
+/* Preserved classes */
+.hidden {
+  display: none;
+}
+.visible {
+  display: block;
+}
+
+.main-canvas {
+  @apply flex flex-row justify-evenly w-full;
+}
+
+/* Custom Glass Fade Effect for Homepage */
+.glass-fade {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  mask-image: linear-gradient(to right, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 60%, transparent 100%);
+}
+
+.main-canvas > div {
+  @apply w-[45%] flex flex-col border border-border-subtle rounded-md;
+}
+
+.react-flow-wrapper {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+/* React Flow Theme Overrides */
+.react-flow__background {
+  background-color: var(--color-bg-app);
+}
+
+.react-flow__controls {
+  box-shadow: 0 4px 12px -2px rgba(0,0,0,0.5) !important;
+}
+
+.react-flow__controls-button {
+  background-color: var(--color-bg-surface) !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  color: var(--color-text-primary) !important;
+}
+.react-flow__controls-button:hover {
+  background-color: var(--color-border-subtle) !important;
+}
+.react-flow__controls-button svg {
+  fill: var(--color-text-secondary) !important;
+}
+.react-flow__controls-button:hover svg {
+  fill: var(--color-accent-teal) !important;
+}
+
+.react-flow__minimap {
+  background-color: var(--color-bg-surface) !important;
+  border: 1px solid var(--color-border-subtle) !important;
+  box-shadow: 0 4px 12px -2px rgba(0,0,0,0.5) !important;
+}
+.react-flow__minimap-mask {
+  fill: rgba(0, 0, 0, 0.4) !important;
+}

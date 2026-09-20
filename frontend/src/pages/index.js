@@ -1,0 +1,5 @@
+export { default as Home } from './Home'
+export { default as AuthPage } from './Auth'
+export { default as Boards } from './Boards'
+export { default as BoardCanvas } from './BoardCanvas'
+export { default as ErrorPage } from './Error'
