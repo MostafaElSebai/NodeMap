@@ -36,24 +36,19 @@ app.use(errorHandler)
 
 const port = process.env.PORT || 3000;
 
-const start = async () => {
-    try {
-        await connectDB(process.env.MONGO_URI)
+await connectDB(process.env.MONGO_URI).catch((err) => {
+    console.log("Database connection failed", err);
+});
 
-        if (process.env.NODE_ENV !== 'production') {
-            const server = app.listen(port, () => {
-                console.log(`Server is listening on port: ${port}...`);
-            })
+if (process.env.NODE_ENV !== 'production') {
+    const server = app.listen(port, () => {
+        console.log(`Server is listening on port: ${port}...`);
+    })
 
-            server.on("error", (error) => {
-                console.log(error);
-            })
-        }
-    } catch (error) {
+    server.on("error", (error) => {
         console.log(error);
-    }
+    })
 }
 
-start()
 
 export default app;
