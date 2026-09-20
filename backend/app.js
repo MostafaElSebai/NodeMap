@@ -28,7 +28,7 @@ app.use("/api/v1/boards/:boardId/connections", connectionsRoutes);
 
 
 app.get("/", (req, res) => {
-    res.send("Welcome to DCB")
+    res.send("Welcome to NodeMap")
 })
 
 app.use(errorHandler)
