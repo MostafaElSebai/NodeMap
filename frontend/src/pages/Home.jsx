@@ -85,8 +85,15 @@ export default function Home() {
                         </div>
                     </div>
 
+                    <div className="lg:hidden mt-12 mb-4 text-center px-4">
+                        <h2 className="text-2xl font-bold font-sans tracking-tight text-white">
+                            Try our <span className="text-accent-teal">Node Maps</span>
+                        </h2>
+                        <p className="text-text-secondary text-sm mt-2">Interact with the demo canvas below</p>
+                    </div>
+
                     {/* Right Side: Demo Canvas (Mobile Inline / Desktop Empty Spacer) */}
-                    <div className="w-full h-[500px] lg:h-[600px] pointer-events-auto lg:pointer-events-none relative overflow-hidden mt-8 lg:mt-0">
+                    <div className="w-full h-[500px] lg:h-[600px] pointer-events-auto lg:pointer-events-none relative overflow-hidden mt-2 lg:mt-0">
                         {/* Render DemoCanvas inline on mobile ONLY */}
                         <div className="max-lg:block lg:hidden absolute inset-0 z-0 bg-[#0f1115] border-y border-border-subtle">
                             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(74,139,154,0.15)_0%,transparent_60%)] pointer-events-none z-10" />
