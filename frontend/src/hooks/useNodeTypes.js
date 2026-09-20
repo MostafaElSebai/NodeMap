@@ -30,7 +30,7 @@ export default function useNodeTypes({ setBoardDataById }) {
             setBoardDataById((prev) => ({ ...prev, nodeTypes: [...prev.nodeTypes, nodeType] }))
 
             setLoading(false)
-
+            return nodeType;
         } catch (error) {
             toast.error(error.response?.data?.msg || "Something went wrong")
             setLoading(false)

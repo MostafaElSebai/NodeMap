@@ -14,7 +14,7 @@ export default function useAuth() {
     const handleLogin = async (email, password) => {
         try {
             const response = await login({ email, password })
-            setUser(response.user)
+            setUser(response)
             setLoading(false)
             toast.success("Logged in successfully")
             navigate('/boards')
@@ -30,7 +30,7 @@ export default function useAuth() {
     const handleRegister = async (name, email, password) => {
         try {
             const response = await register({ name, email, password })
-            setUser(response.user)
+            setUser(response)
             setLoading(false)
             toast.success("Registered successfully")
             navigate('/boards')

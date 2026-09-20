@@ -76,8 +76,11 @@ export default function BoardCanvas() {
     }
 
     const onAddType = async () => {
-        if (!name.trim()) return;
-        await handleCreateNodeType(name, boardId)
+        if (!name.trim()) return
+        const newType = await handleCreateNodeType(name, boardId)
+        if (newType) {
+            setSelectedCategory({ id: newType._id, label: newType.name })
+        }
         setName("")
         if (activeTab === 'type') {
             setActiveTab('none')
@@ -124,20 +127,17 @@ export default function BoardCanvas() {
         if (!searchStartNode || !searchEndNode) return;
         setSearchError(null);
         const result = await graphSearch(boardId, searchStartNode.id, searchEndNode.id);
-        
-        console.log("Graph Search Result:", result);
-        console.log("Edges in state:", edges.map(e => e.id));
 
         if (Array.isArray(result) && result.length > 0) {
             // result is an array of NODE IDs (the shortest path)
             setHighlightedNodeIds(new Set(result));
-            
+
             // Extract edge IDs from the nodes path
             const edgeIds = [];
             for (let i = 0; i < result.length - 1; i++) {
                 const u = result[i];
                 const v = result[i + 1];
-                
+
                 // Find an edge that goes from u to v
                 const pathEdge = edges.find(edge => {
                     const matchesDirect = edge.source === u && edge.target === v;
@@ -145,7 +145,7 @@ export default function BoardCanvas() {
                     const matchesReverse = edge.source === v && edge.target === u && edge.data?.connectionType === 'non-directional';
                     return matchesDirect || matchesReverse;
                 });
-                
+
                 if (pathEdge) {
                     edgeIds.push(pathEdge.id);
                 }
@@ -180,60 +180,8 @@ export default function BoardCanvas() {
         return { ...edge, data: { ...edge.data, isHighlighted, isDimmed: !isHighlighted } };
     });
 
-    return (
-
-        <div className="react-flow-wrapper">
-            <ReactFlow
-                nodes={displayNodes}
-                edges={displayEdges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                nodeTypes={nodeTypes}
-                edgeTypes={edgeTypes}
-                onNodeClick={handleNodeClick}
-                onNodeDragStop={(event, node, nodes) => handleNodeDragStop(boardId, node)}
-                onConnect={(params) => setPendingConnection(params)}
-                fitView
-            >
-                <Background
-                    variant={BackgroundVariant.Dots}
-                    gap={24}
-                    size={2}
-                    color="rgba(255,255,255,0.08)"
-                />
-
-                <MiniMap
-                    nodeStrokeColor="rgba(255,255,255,0.1)"
-                    nodeColor="rgba(44, 49, 58, 1)"
-                />
-                <Controls />
-
-                {/* Left Sidebar HUD */}
-                <Panel position="top-center" className="mt-24 md:mt-28 w-[calc(100vw-2rem)] sm:w-80 md:w-72 pointer-events-auto">
-                    <div className="flex flex-col space-y-4">
-
-                        {/* Control Buttons */}
-                        <div className="flex bg-bg-surface border border-border-subtle rounded-md shadow-lg overflow-hidden font-mono text-sm">
-                            <button
-                                onClick={() => setActiveTab(activeTab === 'node' ? 'none' : 'node')}
-                                className={`flex-1 py-2 text-center transition-colors border-r border-border-subtle ${activeTab === 'node' ? 'bg-accent-teal text-bg-app font-bold' : 'text-text-secondary hover:text-text-primary hover:bg-bg-app'}`}
-                            >
-                                + NODE
-                            </button>
-                            <button
-                                onClick={() => setActiveTab(activeTab === 'type' ? 'none' : 'type')}
-                                className={`flex-1 py-2 text-center transition-colors border-r border-border-subtle ${activeTab === 'type' ? 'bg-accent-teal text-bg-app font-bold' : 'text-text-secondary hover:text-text-primary hover:bg-bg-app'}`}
-                            >
-                                + TYPE
-                            </button>
-                            <button
-                                onClick={() => setActiveTab(activeTab === 'search' ? 'none' : 'search')}
-                                className={`flex flex-1 items-center justify-center space-x-1 py-2 transition-colors ${activeTab === 'search' ? 'bg-accent-teal text-bg-app font-bold' : 'text-text-secondary hover:text-text-primary hover:bg-bg-app'}`}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                <span>SEARCH</span>
-                            </button>
-                        </div>
+    const formsContent = (
+        <>
 
                         {/* Node Creation Form */}
                         {activeTab === 'node' && (
@@ -256,7 +204,7 @@ export default function BoardCanvas() {
                                 />
 
                                 <div className="relative z-40">
-                                    <CustomSelect 
+                                    <CustomSelect
                                         name="category"
                                         items={[
                                             ...(nodeCategories || []).map(cat => ({ id: cat._id, label: cat.name })),
@@ -315,7 +263,7 @@ export default function BoardCanvas() {
 
                                 <div>
                                     <label className="text-[10px] uppercase font-mono text-text-secondary tracking-widest mb-1 block">Start Node</label>
-                                    <CustomCombobox 
+                                    <CustomCombobox
                                         items={nodesArr.map(n => ({ id: n.id, label: n.data.label, subLabel: n.data.category?.name }))}
                                         selectedItem={searchStartNode}
                                         onChange={setSearchStartNode}
@@ -325,7 +273,7 @@ export default function BoardCanvas() {
 
                                 <div>
                                     <label className="text-[10px] uppercase font-mono text-text-secondary tracking-widest mb-1 block">End Node</label>
-                                    <CustomCombobox 
+                                    <CustomCombobox
                                         items={nodesArr.map(n => ({ id: n.id, label: n.data.label, subLabel: n.data.category?.name }))}
                                         selectedItem={searchEndNode}
                                         onChange={setSearchEndNode}
@@ -341,7 +289,7 @@ export default function BoardCanvas() {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                     <span>{boardLoading ? "Searching..." : "Search Path"}</span>
                                 </button>
-                                
+
                                 {searchError && (
                                     <div className="p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-[11px] font-mono text-center">
                                         {searchError}
@@ -359,8 +307,242 @@ export default function BoardCanvas() {
                                 )}
                             </div>
                         )}
+        </>
+    );
+
+    const desktopHudContent = (
+        <div className="flex flex-col space-y-4">
+                        {/* Control Buttons */}
+                        <div className="flex bg-bg-surface border border-border-subtle rounded-md shadow-lg overflow-hidden font-mono text-sm">
+                            <button
+                                onClick={() => setActiveTab(activeTab === 'node' ? 'none' : 'node')}
+                                className={`flex-1 py-2 text-center transition-colors border-r border-border-subtle ${activeTab === 'node' ? 'bg-accent-teal text-bg-app font-bold' : 'text-text-secondary hover:text-text-primary hover:bg-bg-app'}`}
+                            >
+                                + NODE
+                            </button>
+                            <button
+                                onClick={() => setActiveTab(activeTab === 'type' ? 'none' : 'type')}
+                                className={`flex-1 py-2 text-center transition-colors border-r border-border-subtle ${activeTab === 'type' ? 'bg-accent-teal text-bg-app font-bold' : 'text-text-secondary hover:text-text-primary hover:bg-bg-app'}`}
+                            >
+                                + TYPE
+                            </button>
+                            <button
+                                onClick={() => setActiveTab(activeTab === 'search' ? 'none' : 'search')}
+                                className={`flex flex-1 items-center justify-center space-x-1 py-2 transition-colors ${activeTab === 'search' ? 'bg-accent-teal text-bg-app font-bold' : 'text-text-secondary hover:text-text-primary hover:bg-bg-app'}`}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <span>SEARCH</span>
+                            </button>
+                        </div>
+
+
+                        {/* Node Creation Form */}
+                        {activeTab === 'node' && (
+                            <form onSubmit={onAddNode} className="bg-bg-surface border border-border-subtle rounded-md shadow-lg p-4 flex flex-col space-y-4">
+                                <h3 className="font-mono text-xs text-text-secondary uppercase tracking-widest border-b border-border-subtle pb-2">New Node</h3>
+
+                                <input
+                                    type="text"
+                                    placeholder="Title"
+                                    name="title"
+                                    required
+                                    className="w-full bg-bg-app border border-border-subtle rounded px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-teal transition-colors"
+                                />
+
+                                <textarea
+                                    placeholder="Description..."
+                                    name="description"
+                                    rows="3"
+                                    className="w-full bg-bg-app border border-border-subtle rounded px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-teal transition-colors resize-none"
+                                />
+
+                                <div className="relative z-40">
+                                    <CustomSelect
+                                        name="category"
+                                        items={[
+                                            ...(nodeCategories || []).map(cat => ({ id: cat._id, label: cat.name })),
+                                            { id: "add_new_category", label: "+ Add Node Category..." }
+                                        ]}
+                                        selectedItem={selectedCategory}
+                                        onChange={(item) => {
+                                            if (item.id === 'add_new_category') {
+                                                setIsTypeModalOpen(true);
+                                                setSelectedCategory(null);
+                                            } else {
+                                                setSelectedCategory(item);
+                                            }
+                                        }}
+                                        placeholder="Select Category..."
+                                    />
+                                </div>
+
+                                <button type="submit" className="w-full bg-accent-teal text-bg-app font-mono font-bold py-2 rounded text-sm hover:opacity-90 transition-opacity uppercase">
+                                    Deploy Node
+                                </button>
+                            </form>
+                        )}
+
+                        {/* Node Type Creation Form */}
+                        {activeTab === 'type' && (
+                            <div className="bg-bg-surface border border-border-subtle rounded-md shadow-lg p-4 flex flex-col space-y-4">
+                                <h3 className="font-mono text-xs text-text-secondary uppercase tracking-widest border-b border-border-subtle pb-2">New Node Type</h3>
+
+                                <input
+                                    type="text"
+                                    placeholder="Type Name (e.g. Server, Lead)"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && onAddType()}
+                                    className="w-full bg-bg-app border border-border-subtle rounded px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent-teal transition-colors"
+                                />
+
+                                <button
+                                    onClick={onAddType}
+                                    disabled={typesLoading || !name.trim()}
+                                    className="w-full bg-accent-teal text-bg-app font-mono font-bold py-2 rounded text-sm hover:opacity-90 transition-opacity disabled:opacity-50 uppercase"
+                                >
+                                    {typesLoading ? "Registering..." : "Register Type"}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Search Form */}
+                        {activeTab === 'search' && (
+                            <div className={`bg-bg-surface border border-border-subtle rounded-md shadow-lg p-4 flex flex-col space-y-4 transition-opacity duration-300 hover:opacity-100 ${highlightedEdgeIds.length > 0 ? 'opacity-30' : 'opacity-100'}`}>
+                                <h3 className="font-mono text-xs text-text-secondary uppercase tracking-widest border-b border-border-subtle pb-2">Graph Search</h3>
+                                <p className="text-[11px] text-text-secondary leading-tight">
+                                    Click nodes on the board, or search for them below.
+                                </p>
+
+                                <div>
+                                    <label className="text-[10px] uppercase font-mono text-text-secondary tracking-widest mb-1 block">Start Node</label>
+                                    <CustomCombobox
+                                        items={nodesArr.map(n => ({ id: n.id, label: n.data.label, subLabel: n.data.category?.name }))}
+                                        selectedItem={searchStartNode}
+                                        onChange={setSearchStartNode}
+                                        placeholder="Search Start..."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] uppercase font-mono text-text-secondary tracking-widest mb-1 block">End Node</label>
+                                    <CustomCombobox
+                                        items={nodesArr.map(n => ({ id: n.id, label: n.data.label, subLabel: n.data.category?.name }))}
+                                        selectedItem={searchEndNode}
+                                        onChange={setSearchEndNode}
+                                        placeholder="Search End..."
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={onSearchPath}
+                                    disabled={!searchStartNode || !searchEndNode || boardLoading}
+                                    className="w-full bg-accent-teal text-bg-app font-mono font-bold py-2 rounded text-sm hover:opacity-90 transition-opacity disabled:opacity-50 uppercase flex items-center justify-center space-x-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                    <span>{boardLoading ? "Searching..." : "Search Path"}</span>
+                                </button>
+
+                                {searchError && (
+                                    <div className="p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-[11px] font-mono text-center">
+                                        {searchError}
+                                    </div>
+                                )}
+
+                                {highlightedEdgeIds.length > 0 && (
+                                    <button
+                                        onClick={clearSearch}
+                                        className="w-full bg-red-500/20 text-red-500 border border-red-500/30 hover:bg-red-500/30 font-mono font-bold py-2 rounded text-sm transition-all uppercase flex items-center justify-center space-x-2"
+                                    >
+                                        <span>Clear Path</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+        </div>
+    );
+
+    const mobileHudContent = (
+        <div className="md:hidden fixed bottom-0 left-0 w-full z-50 pointer-events-auto bg-bg-surface border-t border-border-subtle pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+            {/* Pop-up Forms Area */}
+            {activeTab !== 'none' && (
+                <div className="absolute bottom-full left-0 w-full p-4 pointer-events-auto max-h-[60vh] overflow-y-auto bg-gradient-to-t from-bg-surface via-bg-surface/95 to-transparent">
+                    <div className="mb-2 flex justify-center">
+                        <div className="w-12 h-1.5 bg-border-subtle rounded-full cursor-pointer" onClick={() => setActiveTab('none')}></div>
                     </div>
+                    {formsContent}
+                </div>
+            )}
+
+            {/* Bottom Navigation Bar */}
+            <div className="flex items-center justify-around p-2">
+                <button 
+                    onClick={() => setActiveTab(activeTab === 'node' ? 'none' : 'node')} 
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${activeTab === 'node' ? 'text-accent-teal bg-accent-teal/10' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span className="text-[11px] mt-1 font-medium font-sans">Node</span>
+                </button>
+
+                <button 
+                    onClick={() => setActiveTab(activeTab === 'type' ? 'none' : 'type')} 
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${activeTab === 'type' ? 'text-accent-teal bg-accent-teal/10' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    <span className="text-[11px] mt-1 font-medium font-sans">Type</span>
+                </button>
+
+                <button 
+                    onClick={() => setActiveTab(activeTab === 'search' ? 'none' : 'search')} 
+                    className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${activeTab === 'search' ? 'text-accent-teal bg-accent-teal/10' : 'text-text-secondary hover:text-text-primary'}`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span className="text-[11px] mt-1 font-medium font-sans">Search</span>
+                </button>
+            </div>
+        </div>
+    );
+
+    return (
+
+        <div className="react-flow-wrapper">
+            <ReactFlow
+                nodes={displayNodes}
+                edges={displayEdges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                onNodeClick={handleNodeClick}
+                onNodeDragStop={(event, node, nodes) => handleNodeDragStop(boardId, node)}
+                onConnect={(params) => setPendingConnection(params)}
+                fitView
+                minZoom={0.1}
+                panOnDrag={true}
+                proOptions={{ hideAttribution: true }}
+            >
+                <Background
+                    variant={BackgroundVariant.Dots}
+                    gap={24}
+                    size={2}
+                    color="rgba(255,255,255,0.08)"
+                />
+
+                <MiniMap
+                    className="max-md:hidden"
+                    nodeStrokeColor="rgba(255,255,255,0.1)"
+                    nodeColor="rgba(44, 49, 58, 1)"
+                />
+                <Controls className="max-md:hidden" />
+
+                {/* Desktop Left Sidebar HUD */}
+                <Panel position="top-center" className="max-md:hidden mt-28 w-72 pointer-events-auto">
+                    {desktopHudContent}
                 </Panel>
+
+                {mobileHudContent}
 
             </ReactFlow>
 
@@ -424,7 +606,7 @@ export default function BoardCanvas() {
                         />
 
                         <div className="relative z-40">
-                            <CustomSelect 
+                            <CustomSelect
                                 name="connType"
                                 items={[
                                     { id: 'non-directional', label: 'Non-directional' },

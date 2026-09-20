@@ -89,6 +89,7 @@ export default function DemoCanvas({ isCentered = false }) {
                 onEdgeDoubleClick={handleEdgeDoubleClick}
                 fitView
                 fitViewOptions={{ padding: 0.2 }}
+                minZoom={0.1}
                 className="bg-transparent w-full h-full"
                 proOptions={{ hideAttribution: true }}
             >

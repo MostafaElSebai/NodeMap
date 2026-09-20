@@ -6,7 +6,7 @@ export default function Home() {
         <div className="relative min-h-screen bg-bg-app text-text-primary overflow-x-hidden lg:grid lg:items-center">
 
             {/* Full Screen Background Canvas */}
-            <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden">
+            <div className="max-lg:hidden absolute inset-0 z-0 overflow-hidden">
                 {/* A subtle teal glow behind the canvas to make it pop */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(74,139,154,0.15)_0%,transparent_60%)] pointer-events-none z-10" />
                 <DemoCanvas />
@@ -14,7 +14,7 @@ export default function Home() {
 
             {/* Foreground Content Container */}
             <div className="relative z-20 w-full px-6 md:px-10 pointer-events-none">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center pt-28 lg:pt-0">
 
                     {/* Left Side: Content Panel */}
                     <div className="flex flex-col space-y-12 py-8 px-4 md:px-6 md:py-8 pointer-events-auto backdrop-blur-[2px] z-20 rounded-3xl">
@@ -88,7 +88,7 @@ export default function Home() {
                     {/* Right Side: Demo Canvas (Mobile Inline / Desktop Empty Spacer) */}
                     <div className="w-full h-[500px] lg:h-[600px] pointer-events-auto lg:pointer-events-none relative overflow-hidden mt-8 lg:mt-0">
                         {/* Render DemoCanvas inline on mobile ONLY */}
-                        <div className="block lg:hidden absolute inset-0 z-0 bg-[#0f1115] border-y border-border-subtle">
+                        <div className="max-lg:block lg:hidden absolute inset-0 z-0 bg-[#0f1115] border-y border-border-subtle">
                             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(74,139,154,0.15)_0%,transparent_60%)] pointer-events-none z-10" />
                             <DemoCanvas isCentered={true} />
                         </div>

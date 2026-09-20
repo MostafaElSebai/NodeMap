@@ -21,10 +21,10 @@ export default function Header() {
                     </Link>
 
                     {/* Separator (Desktop) */}
-                    <div className="hidden md:block w-px h-4 bg-border-subtle"></div>
+                    <div className="max-md:hidden w-px h-4 bg-border-subtle"></div>
 
                     {/* Main Navigation (Desktop) */}
-                    <nav className="hidden md:flex items-center space-x-6">
+                    <nav className="max-md:hidden flex items-center space-x-6">
                         <Link to="/" className="text-text-secondary hover:text-text-primary text-sm font-medium transition-colors">
                             Home
                         </Link>
@@ -37,10 +37,10 @@ export default function Header() {
                 </div>
 
                 {/* Right Corner HUD: Auth State & Mobile Toggle */}
-                <div className="pointer-events-auto flex items-center bg-bg-surface/80 backdrop-blur-md border border-border-subtle rounded-full px-4 py-2 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.5)]">
+                <div className="pointer-events-auto flex items-center justify-center bg-bg-surface/80 backdrop-blur-md border border-border-subtle rounded-full px-4 py-2 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.5)]">
                     
                     {/* Desktop Auth */}
-                    <div className="hidden md:flex items-center space-x-4">
+                    <div className="max-md:hidden flex items-center space-x-4">
                         {user ? (
                             <>
                                 <span className="text-sm font-mono text-text-secondary px-2">
@@ -70,13 +70,13 @@ export default function Header() {
                     {/* Mobile Hamburger Toggle */}
                     <button 
                         onClick={toggleMenu} 
-                        className="md:hidden p-2 text-text-primary focus:outline-none"
+                        className="md:hidden flex items-center justify-center text-text-primary focus:outline-none w-8 h-8"
                         aria-label="Toggle Menu"
                     >
                         {isMobileMenuOpen ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                         )}
                     </button>
                 </div>

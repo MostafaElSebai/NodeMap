@@ -123,7 +123,7 @@ export const loginUser = async (req, res) => {
 
     attachCookieToResponse({ res, user: tokenUser })
 
-    res.status(StatusCodes.OK).json({ user: tokenUser })
+    res.status(StatusCodes.OK).json(tokenUser)
 }
 
 export const logoutUser = async (req, res) => {

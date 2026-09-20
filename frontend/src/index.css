@@ -87,3 +87,13 @@ body {
 .react-flow__minimap-mask {
   fill: rgba(0, 0, 0, 0.4) !important;
 }
+
+@media (max-width: 768px) {
+  .react-flow__controls, .react-flow__minimap {
+    display: none !important;
+  }
+}
+
+.react-flow-wrapper, .react-flow, .react-flow__pane {
+  touch-action: none !important;
+}
