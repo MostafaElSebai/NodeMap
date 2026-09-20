@@ -13,7 +13,7 @@ import morgan from "morgan";
 
 const app = express();
 
-app.use(cors({ credentials: true, origin: "https://backend-three-delta-emln8jvhph.vercel.app" }));
+app.use(cors({ credentials: true, origin: "https://nodemap-vert.vercel.app" }));
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.json());
 app.use(morgan("dev"));
